@@ -7,6 +7,7 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
 )
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
+from streamlit_callback import StreamlitCallbackHandler
 import streamlit as st
 # from dotenv import load_dotenv
 import PyPDF2
@@ -34,7 +35,7 @@ class Text_Expert:
             [self.system_prompt, self.user_prompt]
         )
 
-        self.chat = ChatAnthropic(model='claude-v1-100k', max_tokens_to_sample=512, streaming=True)
+        self.chat = ChatAnthropic(model='claude-v1-100k', max_tokens_to_sample=512, streaming=True, callbacks=[StreamlitCallbackHandler()])
 
         self.chain = LLMChain(llm=self.chat, prompt=full_prompt_template)
 
@@ -59,7 +60,7 @@ class Text_Expert:
         ### END OF Candidates' CV
                  
         Rank the candiates based on their overall suitabilities.
-        Provide jusitification for your ranking, if applicable
+        Provide jusitification for your ranking, if applicable, but keep it very very brief
                
         
         """
@@ -125,21 +126,21 @@ with col2:
     cv_upload()
 
 if anthropic.api_key:
-    if "Text_Expert" not in st.session_state:
-        st.session_state.Text_Expert = Text_Expert()
+
 
     # if there's context_01 & context_02, proceed
     if ("context_01" in st.session_state)&("context_02" in st.session_state):
         # create a text input widget for a question
         question = st.text_input("Ask a question")
-        
-        # st.write(st.session_state.context_01[:200])
-        # st.write(st.session_state.context_02[:200])
-        # st.write(type(st.session_state.context_02))
+    
+    # if "Text_Expert" not in st.session_state:
+    #     st.session_state.Text_Expert = Text_Expert() 
+
         # create a button to run the model
         if st.button("Run"):
             # run the model
-            bot_response = st.session_state.Text_Expert.run_chain(
+            tx_expert = Text_Expert()
+            bot_response = tx_expert.run_chain(
                 'English', st.session_state.context_01, 
                     st.session_state.context_02, question)
 
@@ -150,7 +151,7 @@ if anthropic.api_key:
                 st.session_state.bot_response = bot_response
 
     # display the response
-    if "bot_response" in st.session_state:
-        st.write(st.session_state.bot_response)
+    # if "bot_response" in st.session_state:
+        # st.write(st.session_state.bot_response)
 else:
     pass
