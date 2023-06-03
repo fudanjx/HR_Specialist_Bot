@@ -91,6 +91,8 @@ def retrieve_multi_pdf_text(pdf_files):
 
     return text
 
+
+st.set_page_config(page_title="Alex HR Bot",page_icon="🥳")
 # create a streamlit app
 st.title("HR Talent Specialist Bot")
 st.write("(You may refresh the page to start over)")
